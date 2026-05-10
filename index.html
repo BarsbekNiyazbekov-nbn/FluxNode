@@ -11,7 +11,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #00ffa3; --bg: #050505; --panel: #111; --error: #ff4757; --active-push: scale(0.95); }
-        body { margin: 0; background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+        
+        /* ВКЛЮЧАЕМ ПРОКРУТКУ */
+        body { 
+            margin: 0; 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Montserrat', sans-serif; 
+            overflow-x: hidden; 
+            overflow-y: auto; /* Позволяет листать вверх и вниз */
+            min-height: 100vh;
+        }
         
         button, .nav-item, .game-card, .u-tab, .rate-btn, .avatar-circle {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -46,7 +56,6 @@
         .btn-main { width: 100%; padding: 15px; background: var(--accent); color: black; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 20px; }
         .btn-main:hover { background: #00d688; box-shadow: 0 5px 15px rgba(0,255,163,0.3); }
 
-        /* Стиль для кнопки выхода в профиле */
         .btn-logout-red { width: 100%; padding: 12px; background: none; border: 1px solid var(--error); color: var(--error); border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 15px; }
         .btn-logout-red:hover { background: var(--error); color: white; }
 
