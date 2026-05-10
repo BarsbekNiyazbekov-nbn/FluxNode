@@ -12,14 +12,13 @@
     <style>
         :root { --accent: #00ffa3; --bg: #050505; --panel: #111; --error: #ff4757; --active-push: scale(0.95); }
         
-        /* ВКЛЮЧАЕМ ПРОКРУТКУ */
         body { 
             margin: 0; 
             background: var(--bg); 
             color: white; 
             font-family: 'Montserrat', sans-serif; 
             overflow-x: hidden; 
-            overflow-y: auto; /* Позволяет листать вверх и вниз */
+            overflow-y: auto; 
             min-height: 100vh;
         }
         
@@ -44,9 +43,50 @@
         .container { padding: 30px 40px; }
         .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
 
-        .game-card { background: var(--panel); border-radius: 20px; overflow: hidden; border: 1px solid #222; cursor: pointer; }
+        .game-card { background: var(--panel); border-radius: 20px; overflow: hidden; border: 1px solid #222; cursor: pointer; position: relative; }
         .game-card:hover { border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .card-img { width: 100%; height: 160px; object-fit: cover; }
+
+        /* СТИЛИ ДЛЯ ТРОЕТОЧИЯ */
+        .more-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 10;
+        }
+        .more-btn:hover { background: #333; }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: 10px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            display: none;
+            z-index: 11;
+            overflow: hidden;
+        }
+        .dropdown-item {
+            padding: 10px 20px;
+            font-size: 0.8rem;
+            color: var(--error);
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .dropdown-item:hover { background: #252525; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
         .form-box { max-width: 500px; margin: 30px auto; background: #0c0c0c; border-radius: 25px; padding: 35px; border: 1px solid #222; text-align: center; }
@@ -203,7 +243,7 @@
     let userVotes = JSON.parse(localStorage.getItem('pj_votes')) || {};
 
     const isMobile = window.innerWidth < 1024;
-    let currentOnline = Math.floor(Math.random() * (50 - 15 + 1)) + 15; // Стартовый онлайн
+    let currentOnline = Math.floor(Math.random() * (50 - 15 + 1)) + 15;
 
     window.onload = () => { 
         if(!isMobile && user) updateUI(); 
@@ -213,19 +253,13 @@
 
     function startOnlineCounter() {
         const update = () => {
-            // Плавное и реалистичное изменение онлайна (± 2 человека)
             const change = Math.floor(Math.random() * 5) - 2; 
             currentOnline += change;
             if(currentOnline < 8) currentOnline = 8;
-            
-            const title = document.getElementById('tabTitle');
-            if(title && document.getElementById('mainContent').style.display !== 'none') {
-                const text = document.getElementById('nav-my').classList.contains('active') ? 'МОИ ИГРЫ' : 'РЕКОМЕНДАЦИИ';
-                title.innerHTML = `${text} <span style="font-size:0.8rem; color:var(--accent); margin-left:15px; font-weight:400;">● ${currentOnline} ОНЛАЙН</span>`;
-            }
+            // УБРАЛ ОБНОВЛЕНИЕ ТЕКСТА ОНЛАЙНА В ЗАГОЛОВКЕ
         };
         update();
-        setInterval(update, 3500); // Обновляется каждые 3.5 секунды
+        setInterval(update, 3500);
     }
 
     function openModal(id) { 
@@ -349,10 +383,24 @@
         const grid = document.getElementById('gameGrid');
         grid.innerHTML = '';
         data.forEach(g => {
+            const isMyTab = document.getElementById('nav-my').classList.contains('active');
             const div = document.createElement('div');
             div.className = 'game-card';
             div.onclick = () => openPlay(g.id);
+            
+            // Если мы во вкладке "Мои игры", добавляем кнопку удаления
+            let menuHtml = '';
+            if(isMyTab && user && g.author === user.nick) {
+                menuHtml = `
+                    <button class="more-btn" onclick="toggleMenu(event, ${g.id})">⋮</button>
+                    <div class="dropdown-menu" id="menu-${g.id}">
+                        <div class="dropdown-item" onclick="deleteGame(event, ${g.id})">УДАЛИТЬ</div>
+                    </div>
+                `;
+            }
+
             div.innerHTML = `
+                ${menuHtml}
                 <img src="${g.cover}" class="card-img">
                 <div style="padding:15px;">
                     <div style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:#888; margin-bottom:8px;">
@@ -363,6 +411,29 @@
             grid.appendChild(div);
         });
     }
+
+    // НОВЫЕ ФУНКЦИИ ДЛЯ МЕНЮ И УДАЛЕНИЯ
+    function toggleMenu(e, id) {
+        e.stopPropagation();
+        const allMenus = document.querySelectorAll('.dropdown-menu');
+        allMenus.forEach(m => { if(m.id !== 'menu-'+id) m.style.display = 'none'; });
+        const menu = document.getElementById('menu-' + id);
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function deleteGame(e, id) {
+        e.stopPropagation();
+        if(confirm("Вы уверены, что хотите удалить эту игру?")) {
+            games = games.filter(g => g.id !== id);
+            localStorage.setItem('pj_games', JSON.stringify(games));
+            showTab('my'); // Обновляем вкладку
+        }
+    }
+
+    // Закрытие меню при клике в любое место
+    window.onclick = () => {
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+    };
 
     function showTab(tab) {
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -390,12 +461,11 @@
         document.getElementById('pAuthNick').innerText = "@" + g.author;
         document.getElementById('pDesc').innerText = g.desc;
         
-        // НОВАЯ ЛОГИКА КНОПКИ ИГРАТЬ (Открытие внутри страницы)
         document.querySelector('.btn-play-wide').onclick = () => {
             if(g.gameData) {
                 document.getElementById('gameIframe').src = g.gameData;
                 document.getElementById('gameScreen').style.display = 'block';
-                document.body.style.overflow = 'hidden'; // Убираем скролл сайта во время игры
+                document.body.style.overflow = 'hidden';
             } else {
                 alert("Файл игры не найден!");
             }
@@ -404,11 +474,10 @@
         updateRateButtons();
     }
 
-    // НОВАЯ ФУНКЦИЯ ЗАКРЫТИЯ ИГРЫ
     function closeGameScreen() {
         document.getElementById('gameScreen').style.display = 'none';
-        document.getElementById('gameIframe').src = ''; // Очищаем iframe
-        document.body.style.overflow = 'auto'; // Возвращаем скролл
+        document.getElementById('gameIframe').src = '';
+        document.body.style.overflow = 'auto';
     }
 
     function rate(type) {
