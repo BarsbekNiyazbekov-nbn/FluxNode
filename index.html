@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <meta name="description" content="FluxNode — индивидуальная игровая вселенная. Играй и делись своими проектами.">
     <meta name="keywords" content="FluxNode, игры, разработка игр, brainrot, rng игры">
+    
     <title>FluxNode | Игровая Вселенная</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #00ffa3; --bg: #050505; --panel: #111; --error: #ff4757; --active-push: scale(0.95); }
         
+        /* ВКЛЮЧАЕМ ПРОКРУТКУ */
         body { 
             margin: 0; 
             background: var(--bg); 
             color: white; 
             font-family: 'Montserrat', sans-serif; 
             overflow-x: hidden; 
-            overflow-y: auto; 
+            overflow-y: auto; /* Позволяет листать вверх и вниз */
             min-height: 100vh;
         }
         
@@ -163,7 +166,9 @@
         <label style="display:block; margin-top:20px; text-align:left;">Новая аватарка (необязательно):</label>
         <input type="file" id="editAvatar" accept="image/*">
         <button class="btn-main" onclick="saveProfileChanges()">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
+        
         <button class="btn-logout-red" onclick="logout()">ВЫЙТИ ИЗ АККАУНТА</button>
+        
         <p onclick="closeModal('editProfileModal')" style="text-align:center; cursor:pointer; opacity:0.5; margin-top:20px;">Отмена</p>
     </div>
 </div>
@@ -186,31 +191,41 @@
     </div>
 </div>
 
+<div id="gameScreen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999;">
+    <button onclick="closeGameScreen()" style="position:absolute; top:20px; right:20px; z-index:10000; padding:10px 20px; background:var(--error); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">ЗАКРЫТЬ ИГРУ</button>
+    <iframe id="gameIframe" src="" style="width:100%; height:100%; border:none; background:white;"></iframe>
+</div>
+
 <script>
     let user = JSON.parse(localStorage.getItem('pj_user')) || null;
     let games = JSON.parse(localStorage.getItem('pj_games')) || [];
     let currentGId = null;
-    let userVotes = JSON.parse(localStorage.getItem('pj_votes')) || {}; // Память лайков
+    let userVotes = JSON.parse(localStorage.getItem('pj_votes')) || {};
 
     const isMobile = window.innerWidth < 1024;
+    let currentOnline = Math.floor(Math.random() * (50 - 15 + 1)) + 15; // Стартовый онлайн
 
     window.onload = () => { 
         if(!isMobile && user) updateUI(); 
         showTab('rec'); 
-        startOnlineCounter(); // Запуск онлайна
+        startOnlineCounter();
     };
 
     function startOnlineCounter() {
         const update = () => {
-            const online = Math.floor(Math.random() * (50 - 10 + 1)) + 10;
+            // Плавное и реалистичное изменение онлайна (± 2 человека)
+            const change = Math.floor(Math.random() * 5) - 2; 
+            currentOnline += change;
+            if(currentOnline < 8) currentOnline = 8;
+            
             const title = document.getElementById('tabTitle');
             if(title && document.getElementById('mainContent').style.display !== 'none') {
                 const text = document.getElementById('nav-my').classList.contains('active') ? 'МОИ ИГРЫ' : 'РЕКОМЕНДАЦИИ';
-                title.innerHTML = `${text} <span style="font-size:0.8rem; color:var(--accent); margin-left:15px; font-weight:400;">● ${online} ОНЛАЙН</span>`;
+                title.innerHTML = `${text} <span style="font-size:0.8rem; color:var(--accent); margin-left:15px; font-weight:400;">● ${currentOnline} ОНЛАЙН</span>`;
             }
         };
         update();
-        setInterval(update, 5000);
+        setInterval(update, 3500); // Обновляется каждые 3.5 секунды
     }
 
     function openModal(id) { 
@@ -231,6 +246,7 @@
         const nick = document.getElementById('regNick').value;
         const file = document.getElementById('regAvatar').files[0];
         if(!nick) return alert("Введите ник!");
+        
         if(file) {
             const r = new FileReader();
             r.onload = (e) => { saveUser(nick, e.target.result); };
@@ -276,6 +292,7 @@
         const newNick = document.getElementById('editNick').value;
         const newFile = document.getElementById('editAvatar').files[0];
         if(!newNick) return alert("Никнейм не может быть пустым!");
+
         if(newFile) {
             const r = new FileReader();
             r.onload = (e) => {
@@ -314,7 +331,7 @@
                     name: name,
                     desc: desc || "Описание не добавлено автором.",
                     cover: e.target.result,
-                    gameData: ge.target.result, // Сама игра
+                    gameData: ge.target.result,
                     author: user.nick,
                     authorAv: user.avatar,
                     likes: 0, dislikes: 0
@@ -373,13 +390,25 @@
         document.getElementById('pAuthNick').innerText = "@" + g.author;
         document.getElementById('pDesc').innerText = g.desc;
         
-        // Кнопка Играть
+        // НОВАЯ ЛОГИКА КНОПКИ ИГРАТЬ (Открытие внутри страницы)
         document.querySelector('.btn-play-wide').onclick = () => {
-            const win = window.open();
-            win.document.write(`<iframe src="${g.gameData}" style="width:100%; height:100vh; border:none;"></iframe>`);
+            if(g.gameData) {
+                document.getElementById('gameIframe').src = g.gameData;
+                document.getElementById('gameScreen').style.display = 'block';
+                document.body.style.overflow = 'hidden'; // Убираем скролл сайта во время игры
+            } else {
+                alert("Файл игры не найден!");
+            }
         };
 
         updateRateButtons();
+    }
+
+    // НОВАЯ ФУНКЦИЯ ЗАКРЫТИЯ ИГРЫ
+    function closeGameScreen() {
+        document.getElementById('gameScreen').style.display = 'none';
+        document.getElementById('gameIframe').src = ''; // Очищаем iframe
+        document.body.style.overflow = 'auto'; // Возвращаем скролл
     }
 
     function rate(type) {
