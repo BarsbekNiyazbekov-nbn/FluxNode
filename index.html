@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <meta name="description" content="FluxNode — индивидуальная игровая вселенная. Играй и делись своими проектами.">
     <meta name="keywords" content="FluxNode, игры, разработка игр, brainrot, rng игры">
-    
     <title>FluxNode | Игровая Вселенная</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #00ffa3; --bg: #050505; --panel: #111; --error: #ff4757; --active-push: scale(0.95); }
         
-        /* ВКЛЮЧАЕМ ПРОКРУТКУ */
         body { 
             margin: 0; 
             background: var(--bg); 
             color: white; 
             font-family: 'Montserrat', sans-serif; 
             overflow-x: hidden; 
-            overflow-y: auto; /* Позволяет листать вверх и вниз */
+            overflow-y: auto; 
             min-height: 100vh;
         }
         
@@ -166,9 +163,7 @@
         <label style="display:block; margin-top:20px; text-align:left;">Новая аватарка (необязательно):</label>
         <input type="file" id="editAvatar" accept="image/*">
         <button class="btn-main" onclick="saveProfileChanges()">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
-        
         <button class="btn-logout-red" onclick="logout()">ВЫЙТИ ИЗ АККАУНТА</button>
-        
         <p onclick="closeModal('editProfileModal')" style="text-align:center; cursor:pointer; opacity:0.5; margin-top:20px;">Отмена</p>
     </div>
 </div>
@@ -195,13 +190,28 @@
     let user = JSON.parse(localStorage.getItem('pj_user')) || null;
     let games = JSON.parse(localStorage.getItem('pj_games')) || [];
     let currentGId = null;
+    let userVotes = JSON.parse(localStorage.getItem('pj_votes')) || {}; // Память лайков
 
     const isMobile = window.innerWidth < 1024;
 
     window.onload = () => { 
         if(!isMobile && user) updateUI(); 
         showTab('rec'); 
+        startOnlineCounter(); // Запуск онлайна
     };
+
+    function startOnlineCounter() {
+        const update = () => {
+            const online = Math.floor(Math.random() * (50 - 10 + 1)) + 10;
+            const title = document.getElementById('tabTitle');
+            if(title && document.getElementById('mainContent').style.display !== 'none') {
+                const text = document.getElementById('nav-my').classList.contains('active') ? 'МОИ ИГРЫ' : 'РЕКОМЕНДАЦИИ';
+                title.innerHTML = `${text} <span style="font-size:0.8rem; color:var(--accent); margin-left:15px; font-weight:400;">● ${online} ОНЛАЙН</span>`;
+            }
+        };
+        update();
+        setInterval(update, 5000);
+    }
 
     function openModal(id) { 
         document.getElementById(id).style.display = 'block'; 
@@ -221,7 +231,6 @@
         const nick = document.getElementById('regNick').value;
         const file = document.getElementById('regAvatar').files[0];
         if(!nick) return alert("Введите ник!");
-        
         if(file) {
             const r = new FileReader();
             r.onload = (e) => { saveUser(nick, e.target.result); };
@@ -267,7 +276,6 @@
         const newNick = document.getElementById('editNick').value;
         const newFile = document.getElementById('editAvatar').files[0];
         if(!newNick) return alert("Никнейм не может быть пустым!");
-
         if(newFile) {
             const r = new FileReader();
             r.onload = (e) => {
@@ -294,22 +302,28 @@
         const name = document.getElementById('gName').value;
         const desc = document.getElementById('gDesc').value;
         const cover = document.getElementById('gCover').files[0];
-        if(!name || !cover) return alert("Заполните название и обложку!");
+        const gameFile = document.getElementById('gMainFile').files[0];
+        if(!name || !cover || !gameFile) return alert("Заполните всё: название, обложку и файл!");
 
         const r = new FileReader();
         r.onload = (e) => {
-            const g = {
-                id: Date.now(),
-                name: name,
-                desc: desc || "Описание не добавлено автором.",
-                cover: e.target.result,
-                author: user.nick,
-                authorAv: user.avatar,
-                likes: 0, dislikes: 0
+            const gr = new FileReader();
+            gr.onload = (ge) => {
+                const g = {
+                    id: Date.now(),
+                    name: name,
+                    desc: desc || "Описание не добавлено автором.",
+                    cover: e.target.result,
+                    gameData: ge.target.result, // Сама игра
+                    author: user.nick,
+                    authorAv: user.avatar,
+                    likes: 0, dislikes: 0
+                };
+                games.push(g);
+                localStorage.setItem('pj_games', JSON.stringify(games));
+                location.reload();
             };
-            games.push(g);
-            localStorage.setItem('pj_games', JSON.stringify(games));
-            location.reload();
+            gr.readAsDataURL(gameFile);
         };
         r.readAsDataURL(cover);
     }
@@ -358,17 +372,43 @@
         document.getElementById('pAuthAv').src = g.authorAv;
         document.getElementById('pAuthNick').innerText = "@" + g.author;
         document.getElementById('pDesc').innerText = g.desc;
-        document.getElementById('pLikes').innerText = g.likes;
-        document.getElementById('pDis').innerText = g.dislikes;
+        
+        // Кнопка Играть
+        document.querySelector('.btn-play-wide').onclick = () => {
+            const win = window.open();
+            win.document.write(`<iframe src="${g.gameData}" style="width:100%; height:100vh; border:none;"></iframe>`);
+        };
+
+        updateRateButtons();
     }
 
     function rate(type) {
+        if(!user) return alert("Войдите в аккаунт!");
         const g = games.find(x => x.id === currentGId);
-        if(type === 'like') { g.likes++; document.getElementById('likeBtn').classList.add('liked'); }
-        else { g.dislikes++; document.getElementById('disBtn').classList.add('disliked'); }
+        const voteKey = currentGId;
+
+        if (userVotes[voteKey] === type) {
+            type === 'like' ? g.likes-- : g.dislikes--;
+            delete userVotes[voteKey];
+        } else {
+            if (userVotes[voteKey]) {
+                userVotes[voteKey] === 'like' ? g.likes-- : g.dislikes--;
+            }
+            type === 'like' ? g.likes++ : g.dislikes++;
+            userVotes[voteKey] = type;
+        }
+
+        localStorage.setItem('pj_games', JSON.stringify(games));
+        localStorage.setItem('pj_votes', JSON.stringify(userVotes));
+        updateRateButtons();
+    }
+
+    function updateRateButtons() {
+        const g = games.find(x => x.id === currentGId);
         document.getElementById('pLikes').innerText = g.likes;
         document.getElementById('pDis').innerText = g.dislikes;
-        localStorage.setItem('pj_games', JSON.stringify(games));
+        document.getElementById('likeBtn').classList.toggle('liked', userVotes[currentGId] === 'like');
+        document.getElementById('disBtn').classList.toggle('disliked', userVotes[currentGId] === 'dislike');
     }
 
     function closePlay() { showTab('rec'); }
