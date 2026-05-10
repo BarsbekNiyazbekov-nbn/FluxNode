@@ -2,6 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="google-site-verification" content="qew8vFM_6pNZSCeajjGMCxwi8aqNZi5BlGP6Jd6-2CQ" />
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <meta name="description" content="FluxNode — индивидуальная игровая вселенная. Играй и делись своими проектами.">
@@ -47,7 +49,6 @@
         .game-card:hover { border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .card-img { width: 100%; height: 160px; object-fit: cover; }
 
-        /* СТИЛИ ДЛЯ ТРОЕТОЧИЯ */
         .more-btn {
             position: absolute;
             top: 10px;
@@ -256,7 +257,6 @@
             const change = Math.floor(Math.random() * 5) - 2; 
             currentOnline += change;
             if(currentOnline < 8) currentOnline = 8;
-            // УБРАЛ ОБНОВЛЕНИЕ ТЕКСТА ОНЛАЙНА В ЗАГОЛОВКЕ
         };
         update();
         setInterval(update, 3500);
@@ -388,7 +388,6 @@
             div.className = 'game-card';
             div.onclick = () => openPlay(g.id);
             
-            // Если мы во вкладке "Мои игры", добавляем кнопку удаления
             let menuHtml = '';
             if(isMyTab && user && g.author === user.nick) {
                 menuHtml = `
@@ -412,7 +411,6 @@
         });
     }
 
-    // НОВЫЕ ФУНКЦИИ ДЛЯ МЕНЮ И УДАЛЕНИЯ
     function toggleMenu(e, id) {
         e.stopPropagation();
         const allMenus = document.querySelectorAll('.dropdown-menu');
@@ -426,11 +424,10 @@
         if(confirm("Вы уверены, что хотите удалить эту игру?")) {
             games = games.filter(g => g.id !== id);
             localStorage.setItem('pj_games', JSON.stringify(games));
-            showTab('my'); // Обновляем вкладку
+            showTab('my');
         }
     }
 
-    // Закрытие меню при клике в любое место
     window.onclick = () => {
         document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
     };
