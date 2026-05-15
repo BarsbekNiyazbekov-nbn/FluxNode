@@ -1,512 +1,534 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="google-site-verification" content="qew8vFM_6pNZSCeajjGMCxwi8aqNZi5BlGP6Jd6-2CQ" />
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="description" content="FluxNode — индивидуальная игровая вселенная. Играй и делись своими проектами.">
-    <meta name="keywords" content="FluxNode, игры, разработка игр, brainrot, rng игры">
-    
-    <title>FluxNode | Игровая Вселенная</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --accent: #00ffa3; --bg: #050505; --panel: #111; --error: #ff4757; --active-push: scale(0.95); }
-        
-        body { 
-            margin: 0; 
-            background: var(--bg); 
-            color: white; 
-            font-family: 'Montserrat', sans-serif; 
-            overflow-x: hidden; 
-            overflow-y: auto; 
-            min-height: 100vh;
-        }
-        
-        button, .nav-item, .game-card, .u-tab, .rate-btn, .avatar-circle {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            user-select: none;
-        }
-        button:active, .nav-item:active, .game-card:active, .rate-btn:active {
-            transform: var(--active-push);
-        }
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="qew8vFM_6pNZSCeajjGMCxwi8aqNZi5BlGP6Jd6-2CQ" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="FluxNode — индивидуальная игровая вселенная. Играй и делись своими проектами.">
+    <meta name="keywords" content="FluxNode, игры, разработка игр, brainrot, rng игры">
+    
+    <title>FluxNode | Игровая Вселенная</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #00ffa3; --bg: #050505; --panel: #111; --error: #ff4757; --active-push: scale(0.95); }
+        
+        body { 
+            margin: 0; 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Montserrat', sans-serif; 
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            min-height: 100vh;
+        }
+        
+        button, .nav-item, .game-card, .u-tab, .rate-btn, .avatar-circle {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+        button:active, .nav-item:active, .game-card:active, .rate-btn:active {
+            transform: var(--active-push);
+        }
 
-        header { padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; position: sticky; top: 0; background: rgba(5,5,5,0.95); z-index: 100; backdrop-filter: blur(10px); }
-        .logo { font-weight: 900; font-size: 1.6rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
-        .nav-links { display: flex; gap: 20px; }
-        .nav-item { cursor: pointer; font-weight: 600; font-size: 0.9rem; color: #888; padding: 5px 10px; }
-        .nav-item:hover { color: #fff; }
-        .nav-item.active { color: var(--accent); }
-        
-        .avatar-circle { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); cursor: pointer; }
-        .avatar-circle:hover { box-shadow: 0 0 15px var(--accent); }
+        header { padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; position: sticky; top: 0; background: rgba(5,5,5,0.95); z-index: 100; backdrop-filter: blur(10px); }
+        .logo { font-weight: 900; font-size: 1.6rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-item { cursor: pointer; font-weight: 600; font-size: 0.9rem; color: #888; padding: 5px 10px; }
+        .nav-item:hover { color: #fff; }
+        .nav-item.active { color: var(--accent); }
+        
+        .avatar-circle { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); cursor: pointer; }
+        .avatar-circle:hover { box-shadow: 0 0 15px var(--accent); }
 
-        .container { padding: 30px 40px; }
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .container { padding: 30px 40px; }
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
 
-        .game-card { background: var(--panel); border-radius: 20px; overflow: hidden; border: 1px solid #222; cursor: pointer; position: relative; }
-        .game-card:hover { border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .card-img { width: 100%; height: 160px; object-fit: cover; }
+        .game-card { background: var(--panel); border-radius: 20px; overflow: hidden; border: 1px solid #222; cursor: pointer; position: relative; }
+        .game-card:hover { border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .card-img { width: 100%; height: 160px; object-fit: cover; }
 
-        .more-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            z-index: 10;
-        }
-        .more-btn:hover { background: #333; }
-        
-        .dropdown-menu {
-            position: absolute;
-            top: 45px;
-            right: 10px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            display: none;
-            z-index: 11;
-            overflow: hidden;
-        }
-        .dropdown-item {
-            padding: 10px 20px;
-            font-size: 0.8rem;
-            color: var(--error);
-            font-weight: bold;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .dropdown-item:hover { background: #252525; }
+        .more-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            z-index: 10;
+        }
+        .more-btn:hover { background: #333; }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: 10px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            display: none;
+            z-index: 11;
+            overflow: hidden;
+        }
+        .dropdown-item {
+            padding: 10px 20px;
+            font-size: 0.8rem;
+            color: var(--error);
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .dropdown-item:hover { background: #252525; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
-        .form-box { max-width: 500px; margin: 30px auto; background: #0c0c0c; border-radius: 25px; padding: 35px; border: 1px solid #222; text-align: center; }
-        input, select, textarea { width: 100%; background: #151515; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; margin-top: 10px; box-sizing: border-box; font-family: inherit; outline: none; }
-        input:focus { border-color: var(--accent); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
+        .form-box { max-width: 500px; margin: 30px auto; background: #0c0c0c; border-radius: 25px; padding: 35px; border: 1px solid #222; text-align: center; }
+        input, select, textarea { width: 100%; background: #151515; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; margin-top: 10px; box-sizing: border-box; font-family: inherit; outline: none; }
+        input:focus { border-color: var(--accent); }
 
-        .btn-main { width: 100%; padding: 15px; background: var(--accent); color: black; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 20px; }
-        .btn-main:hover { background: #00d688; box-shadow: 0 5px 15px rgba(0,255,163,0.3); }
+        .btn-main { width: 100%; padding: 15px; background: var(--accent); color: black; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 20px; }
+        .btn-main:hover { background: #00d688; box-shadow: 0 5px 15px rgba(0,255,163,0.3); }
 
-        .btn-logout-red { width: 100%; padding: 12px; background: none; border: 1px solid var(--error); color: var(--error); border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 15px; }
-        .btn-logout-red:hover { background: var(--error); color: white; }
+        .btn-logout-red { width: 100%; padding: 12px; background: none; border: 1px solid var(--error); color: var(--error); border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 15px; }
+        .btn-logout-red:hover { background: var(--error); color: white; }
 
-        .social-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 700; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-google { background: white; color: #333; }
-        .btn-apple { background: #000; color: white; border: 1px solid #444; }
-        .btn-fb { background: #1877F2; color: white; }
+        .social-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 700; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-google { background: white; color: #333; }
+        .btn-apple { background: #000; color: white; border: 1px solid #444; }
+        .btn-fb { background: #1877F2; color: white; }
 
-        .play-container { max-width: 900px; margin: 0 auto; display: none; padding-top: 20px; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .play-top { display: flex; gap: 25px; align-items: flex-start; margin-bottom: 25px; flex-wrap: wrap; }
-        .play-img-big { width: 220px; height: 140px; border-radius: 15px; object-fit: cover; border: 1px solid #333; }
-        .play-author { display: flex; align-items: center; gap: 10px; color: #888; margin-top: 10px; }
-        .play-author img { width: 30px; height: 30px; border-radius: 50%; }
+        .play-container { max-width: 900px; margin: 0 auto; display: none; padding-top: 20px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .play-top { display: flex; gap: 25px; align-items: flex-start; margin-bottom: 25px; flex-wrap: wrap; }
+        .play-img-big { width: 220px; height: 140px; border-radius: 15px; object-fit: cover; border: 1px solid #333; }
+        .play-author { display: flex; align-items: center; gap: 10px; color: #888; margin-top: 10px; }
+        .play-author img { width: 30px; height: 30px; border-radius: 50%; }
 
-        .btn-play-wide { width: 100%; padding: 15px; background: var(--accent); color: black; border: none; border-radius: 12px; font-weight: 900; font-size: 1.2rem; cursor: pointer; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .rating-box { display: flex; gap: 15px; margin-bottom: 25px; }
-        .rate-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px 25px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; }
-        .rate-btn:hover { background: #222; }
-        .rate-btn.liked { color: var(--accent); border-color: var(--accent); }
-        .rate-btn.disliked { color: var(--error); border-color: var(--error); }
+        .btn-play-wide { width: 100%; padding: 15px; background: var(--accent); color: black; border: none; border-radius: 12px; font-weight: 900; font-size: 1.2rem; cursor: pointer; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .rating-box { display: flex; gap: 15px; margin-bottom: 25px; }
+        .rate-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px 25px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .rate-btn:hover { background: #222; }
+        .rate-btn.liked { color: var(--accent); border-color: var(--accent); }
+        .rate-btn.disliked { color: var(--error); border-color: var(--error); }
 
-        .description-text { line-height: 1.6; color: #bbb; background: #111; padding: 25px; border-radius: 20px; border: 1px solid #222; }
+        .description-text { line-height: 1.6; color: #bbb; background: #111; padding: 25px; border-radius: 20px; border: 1px solid #222; }
 
-        .logout-text { font-size: 0.65rem; color: #ff4757; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-top: 2px; }
-        .logout-text:hover { text-decoration: underline; }
+        .logout-text { font-size: 0.65rem; color: #ff4757; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-top: 2px; }
+        .logout-text:hover { text-decoration: underline; }
 
-        @media (max-width: 1023px) {
-            .pc-only, #authBox { display: none !important; }
-            .nav-item#nav-my { display: none !important; }
-        }
-        
-        @media (min-width: 1024px) {
-            .pc-only { display: block; }
-        }
-    </style>
+        @media (max-width: 1023px) {
+            .pc-only, #authBox { display: none !important; }
+            .nav-item#nav-my { display: none !important; }
+        }
+        
+        @media (min-width: 1024px) {
+            .pc-only { display: block; }
+        }
+    </style>
 </head>
 <body>
 
 <img src="logo.png" style="width:100%; max-height:300px; object-fit:cover;">
 
 <header>
-    <div class="logo" onclick="location.reload()">FluxNode</div>
-    <div class="nav-links">
-        <span class="nav-item active" id="nav-rec" onclick="showTab('rec')">Рекомендации</span>
-        <span class="nav-item pc-only" id="nav-my" style="display:none;" onclick="showTab('my')">Мои игры</span>
-    </div>
-    <div id="authBox">
-        <button onclick="openModal('regModal')" class="btn-main" style="margin:0; padding:10px 20px; width:auto; font-size:0.8rem;">РЕГИСТРАЦИЯ</button>
-    </div>
+    <div class="logo" onclick="location.reload()">FluxNode</div>
+    <div class="nav-links">
+        <span class="nav-item active" id="nav-rec" onclick="showTab('rec')">Рекомендации</span>
+        <span class="nav-item pc-only" id="nav-my" style="display:none;" onclick="showTab('my')">Мои игры</span>
+    </div>
+    <div id="authBox">
+        <button onclick="openModal('regModal')" class="btn-main" style="margin:0; padding:10px 20px; width:auto; font-size:0.8rem;">РЕГИСТРАЦИЯ</button>
+    </div>
 </header>
 
 <div class="container">
-    <div id="mainContent">
-        <h2 id="tabTitle" style="margin-bottom:25px; font-weight: 900; letter-spacing: -1px;">РЕКОМЕНДАЦИИ</h2>
-        <div class="game-grid" id="gameGrid"></div>
-    </div>
+    <div id="mainContent">
+        <h2 id="tabTitle" style="margin-bottom:25px; font-weight: 900; letter-spacing: -1px;">РЕКОМЕНДАЦИИ</h2>
+        <div class="game-grid" id="gameGrid"></div>
+    </div>
 
-    <div id="playPage" class="play-container">
-        <button onclick="closePlay()" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-bottom:20px; font-weight: bold;">← НАЗАД</button>
-        <div class="play-top">
-            <img id="pImg" class="play-img-big" src="">
-            <div class="play-meta">
-                <h1 id="pTitle" style="margin:0; font-size: 2.5rem;">Название игры</h1>
-                <div class="play-author">
-                    <img id="pAuthAv" src="">
-                    <span id="pAuthNick">@автор</span>
-                </div>
-            </div>
-        </div>
-        <button class="btn-play-wide">ИГРАТЬ</button>
-        <div class="rating-box">
-            <button id="likeBtn" class="rate-btn" onclick="rate('like')">👍 <span id="pLikes">0</span></button>
-            <button id="disBtn" class="rate-btn" onclick="rate('dislike')">👎 <span id="pDis">0</span></button>
-        </div>
-        <div class="description-text">
-            <h4 style="margin-top:0; color:var(--accent); text-transform: uppercase;">Описание:</h4>
-            <div id="pDesc">Тут будет описание игры...</div>
-        </div>
-    </div>
+    <div id="playPage" class="play-container">
+        <button onclick="closePlay()" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-bottom:20px; font-weight: bold;">← НАЗАД</button>
+        <div class="play-top">
+            <img id="pImg" class="play-img-big" src="">
+            <div class="play-meta">
+                <h1 id="pTitle" style="margin:0; font-size: 2.5rem;">Название игры</h1>
+                <div class="play-author">
+                    <img id="pAuthAv" src="">
+                    <span id="pAuthNick">@автор</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn-play-wide">ИГРАТЬ</button>
+        <div class="rating-box">
+            <button id="likeBtn" class="rate-btn" onclick="rate('like')">👍 <span id="pLikes">0</span></button>
+            <button id="disBtn" class="rate-btn" onclick="rate('dislike')">👎 <span id="pDis">0</span></button>
+        </div>
+        <div class="description-text">
+            <h4 style="margin-top:0; color:var(--accent); text-transform: uppercase;">Описание:</h4>
+            <div id="pDesc">Тут будет описание игры...</div>
+        </div>
+    </div>
 </div>
 
 <div class="modal" id="regModal">
-    <div class="form-box">
-        <div id="stepSocial">
-            <h2 style="margin-top:0;">ВОЙТИ ЧЕРЕЗ</h2>
-            <button class="social-btn btn-google" onclick="nextStep()">Google</button>
-            <button class="social-btn btn-apple" onclick="nextStep()">Apple ID</button>
-            <button class="social-btn btn-fb" onclick="nextStep()">Facebook</button>
-            <p onclick="closeModal('regModal')" style="opacity:0.5; cursor:pointer; margin-top:20px;">Отмена</p>
-        </div>
-        <div id="stepProfile" style="display:none;">
-            <h2 style="margin-top:0;">ПРОФИЛЬ</h2>
-            <input type="text" id="regNick" placeholder="Придумайте ник">
-            <label style="display:block; margin-top:20px; text-align:left;">Загрузите аватарку:</label>
-            <input type="file" id="regAvatar" accept="image/*">
-            <button class="btn-main" onclick="register()">ЗАВЕРШИТЬ</button>
-        </div>
-    </div>
+    <div class="form-box">
+        <div id="stepSocial">
+            <h2 style="margin-top:0;">ВОЙТИ ЧЕРЕЗ</h2>
+            <button class="social-btn btn-google" onclick="nextStep()">Google</button>
+            <button class="social-btn btn-apple" onclick="nextStep()">Apple ID</button>
+            <button class="social-btn btn-fb" onclick="nextStep()">Facebook</button>
+            <p onclick="closeModal('regModal')" style="opacity:0.5; cursor:pointer; margin-top:20px;">Отмена</p>
+        </div>
+        <div id="stepProfile" style="display:none;">
+            <h2 style="margin-top:0;">ПРОФИЛЬ</h2>
+            <input type="text" id="regNick" placeholder="Придумайте ник">
+            <label style="display:block; margin-top:20px; text-align:left;">Загрузите аватарку:</label>
+            <input type="file" id="regAvatar" accept="image/*">
+            <button class="btn-main" onclick="register()">ЗАВЕРШИТЬ</button>
+        </div>
+    </div>
 </div>
 
 <div class="modal" id="editProfileModal">
-    <div class="form-box">
-        <h2 style="color:var(--accent); margin-top:0;">РЕДАКТИРОВАТЬ ПРОФИЛЬ</h2>
-        <input type="text" id="editNick" placeholder="Новый никнейм">
-        <label style="display:block; margin-top:20px; text-align:left;">Новая аватарка (необязательно):</label>
-        <input type="file" id="editAvatar" accept="image/*">
-        <button class="btn-main" onclick="saveProfileChanges()">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
-        
-        <button class="btn-logout-red" onclick="logout()">ВЫЙТИ ИЗ АККАУНТА</button>
-        
-        <p onclick="closeModal('editProfileModal')" style="text-align:center; cursor:pointer; opacity:0.5; margin-top:20px;">Отмена</p>
-    </div>
+    <div class="form-box">
+        <h2 style="color:var(--accent); margin-top:0;">РЕДАКТИРОВАТЬ ПРОФИЛЬ</h2>
+        <input type="text" id="editNick" placeholder="Новый никнейм">
+        <label style="display:block; margin-top:20px; text-align:left;">Новая аватарка (необязательно):</label>
+        <input type="file" id="editAvatar" accept="image/*">
+        <button class="btn-main" onclick="saveProfileChanges()">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
+        
+        <button class="btn-logout-red" onclick="logout()">ВЫЙТИ ИЗ АККАУНТА</button>
+        
+        <p onclick="closeModal('editProfileModal')" style="text-align:center; cursor:pointer; opacity:0.5; margin-top:20px;">Отмена</p>
+    </div>
 </div>
 
 <div class="modal" id="pubModal">
-    <div class="form-box">
-        <h2 style="color:var(--accent); margin-top:0;">НОВАЯ ПУБЛИКАЦИЯ</h2>
-        <input type="text" id="gName" placeholder="Название вашей игры">
-        <textarea id="gDesc" placeholder="О чем ваша игра? Расскажите подробнее..." rows="4"></textarea>
-        <label style="display:block; margin-top:20px;">Картинка (обложка):</label>
-        <input type="file" id="gCover" accept="image/*">
-        <label style="display:block; margin-top:20px;">Загрузка проекта:</label>
-        <select id="uTypeSelect" onchange="updateFileInput(this.value)" style="margin-bottom:10px;">
-            <option value="file">Один файл (.html)</option>
-            <option value="folder">Папка проекта</option>
-        </select>
-        <input type="file" id="gMainFile">
-        <button class="btn-main" onclick="publish()">ОПУБЛИКОВАТЬ В СЕТЬ</button>
-        <p onclick="closeModal('pubModal')" style="text-align:center; cursor:pointer; opacity:0.5; margin-top:20px;">Отмена</p>
-    </div>
+    <div class="form-box">
+        <h2 style="color:var(--accent); margin-top:0;">НОВАЯ ПУБЛИКАЦИЯ</h2>
+        <input type="text" id="gName" placeholder="Название вашей игры">
+        <textarea id="gDesc" placeholder="О чем ваша игра? Расскажите подробнее..." rows="4"></textarea>
+        <label style="display:block; margin-top:20px;">Картинка (обложка):</label>
+        <input type="file" id="gCover" accept="image/*">
+        <label style="display:block; margin-top:20px;">Загрузка проекта:</label>
+        <select id="uTypeSelect" onchange="updateFileInput(this.value)" style="margin-bottom:10px;">
+            <option value="file">Один файл (.html)</option>
+            <option value="folder">Папка проекта</option>
+        </select>
+        <input type="file" id="gMainFile">
+        <button class="btn-main" onclick="publish()">ОПУБЛИКОВАТЬ В СЕТЬ</button>
+        <p onclick="closeModal('pubModal')" style="text-align:center; cursor:pointer; opacity:0.5; margin-top:20px;">Отмена</p>
+    </div>
 </div>
 
 <div id="gameScreen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999;">
-    <button onclick="closeGameScreen()" style="position:absolute; top:20px; right:20px; z-index:10000; padding:10px 20px; background:var(--error); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">ЗАКРЫТЬ ИГРУ</button>
-    <iframe id="gameIframe" src="" style="width:100%; height:100%; border:none; background:white;"></iframe>
+    <button onclick="closeGameScreen()" style="position:absolute; top:20px; right:20px; z-index:10000; padding:10px 20px; background:var(--error); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">ЗАКРЫТЬ ИГРУ</button>
+    <iframe id="gameIframe" src="" style="width:100%; height:100%; border:none; background:white;"></iframe>
 </div>
 
 <script>
-    let user = JSON.parse(localStorage.getItem('pj_user')) || null;
-    let games = JSON.parse(localStorage.getItem('pj_games')) || [];
-    let currentGId = null;
-    let userVotes = JSON.parse(localStorage.getItem('pj_votes')) || {};
+    let user = JSON.parse(localStorage.getItem('pj_user')) || null;
+    
+    // 1. ОПРЕДЕЛЯЕМ СТАНДАРТНУЮ ИГРУ
+    let defaultGame = {
+        id: 1,
+        name: "Brainrot Clicker",
+        desc: "Лучший кликер для настоящих сигм!",
+        cover: "https://via.placeholder.com/600x400?text=Brainrot+Clicker", 
+        gameData: "index2.html", 
+        author: "bars",
+        authorAv: "https://cdn-icons-png.flaticon.com/512/149/149071.png", 
+        likes: 61, 
+        dislikes: 9
+    };
 
-    const isMobile = window.innerWidth < 1024;
-    let currentOnline = Math.floor(Math.random() * (50 - 15 + 1)) + 15;
+    // 2. ЗАГРУЖАЕМ ИГРЫ (если пусто — ставим стандартную)
+    let games = JSON.parse(localStorage.getItem('pj_games')) || [defaultGame];
+    
+    // Проверка: если в localStorage есть массив, но он пустой, тоже добавляем дефолтную игру
+    if (games.length === 0) {
+        games = [defaultGame];
+        localStorage.setItem('pj_games', JSON.stringify(games));
+    }
 
-    window.onload = () => { 
-        if(!isMobile && user) updateUI(); 
-        showTab('rec'); 
-        startOnlineCounter();
-    };
+    let currentGId = null;
+    let userVotes = JSON.parse(localStorage.getItem('pj_votes')) || {};
 
-    function startOnlineCounter() {
-        const update = () => {
-            const change = Math.floor(Math.random() * 5) - 2; 
-            currentOnline += change;
-            if(currentOnline < 8) currentOnline = 8;
-        };
-        update();
-        setInterval(update, 3500);
-    }
+    const isMobile = window.innerWidth < 1024;
+    let currentOnline = Math.floor(Math.random() * (50 - 15 + 1)) + 15;
 
-    function openModal(id) { 
-        document.getElementById(id).style.display = 'block'; 
-        if(id === 'regModal') {
-            document.getElementById('stepSocial').style.display = 'block';
-            document.getElementById('stepProfile').style.display = 'none';
-        }
-    }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    window.onload = () => { 
+        if(!isMobile && user) updateUI(); 
+        showTab('rec'); 
+        startOnlineCounter();
+    };
 
-    function nextStep() {
-        document.getElementById('stepSocial').style.display = 'none';
-        document.getElementById('stepProfile').style.display = 'block';
-    }
+    function startOnlineCounter() {
+        const update = () => {
+            const change = Math.floor(Math.random() * 5) - 2; 
+            currentOnline += change;
+            if(currentOnline < 8) currentOnline = 8;
+        };
+        update();
+        setInterval(update, 3500);
+    }
 
-    function register() {
-        const nick = document.getElementById('regNick').value;
-        const file = document.getElementById('regAvatar').files[0];
-        if(!nick) return alert("Введите ник!");
-        
-        if(file) {
-            const r = new FileReader();
-            r.onload = (e) => { saveUser(nick, e.target.result); };
-            r.readAsDataURL(file);
-        } else {
-            saveUser(nick, 'https://cdn-icons-png.flaticon.com/512/149/149071.png');
-        }
-    }
+    function openModal(id) { 
+        document.getElementById(id).style.display = 'block'; 
+        if(id === 'regModal') {
+            document.getElementById('stepSocial').style.display = 'block';
+            document.getElementById('stepProfile').style.display = 'none';
+        }
+    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    function saveUser(nick, av) {
-        user = { nick: nick, avatar: av };
-        localStorage.setItem('pj_user', JSON.stringify(user));
-        location.reload();
-    }
+    function nextStep() {
+        document.getElementById('stepSocial').style.display = 'none';
+        document.getElementById('stepProfile').style.display = 'block';
+    }
 
-    function updateUI() {
-        if(isMobile) return;
-        document.getElementById('authBox').innerHTML = `
-            <div style="display:flex; align-items:center; gap:20px;">
-                <button class="btn-main" onclick="openModal('pubModal')" style="margin:0; padding:8px 15px; font-size:0.8rem; width:auto;">ВЫЛОЖИТЬ</button>
-                <div style="display:flex; flex-direction:column; align-items:center;">
-                    <img src="${user.avatar}" class="avatar-circle" onclick="editProfile()">
-                    <span style="font-size:0.7rem; color:var(--accent); font-weight:700; margin-top:5px; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer;" onclick="editProfile()">${user.nick}</span>
-                </div>
-            </div>`;
-        document.getElementById('nav-my').style.display = 'block';
-    }
+    function register() {
+        const nick = document.getElementById('regNick').value;
+        const file = document.getElementById('regAvatar').files[0];
+        if(!nick) return alert("Введите ник!");
+        
+        if(file) {
+            const r = new FileReader();
+            r.onload = (e) => { saveUser(nick, e.target.result); };
+            r.readAsDataURL(file);
+        } else {
+            saveUser(nick, 'https://cdn-icons-png.flaticon.com/512/149/149071.png');
+        }
+    }
 
-    function logout() {
-        if(confirm("Вы уверены, что хотите выйти из аккаунта?")) {
-            localStorage.removeItem('pj_user');
-            location.reload();
-        }
-    }
+    function saveUser(nick, av) {
+        user = { nick: nick, avatar: av };
+        localStorage.setItem('pj_user', JSON.stringify(user));
+        location.reload();
+    }
 
-    function editProfile() {
-        if(isMobile) return;
-        document.getElementById('editNick').value = user.nick;
-        openModal('editProfileModal');
-    }
+    function updateUI() {
+        if(isMobile) return;
+        document.getElementById('authBox').innerHTML = `
+            <div style="display:flex; align-items:center; gap:20px;">
+                <button class="btn-main" onclick="openModal('pubModal')" style="margin:0; padding:8px 15px; font-size:0.8rem; width:auto;">ВЫЛОЖИТЬ</button>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <img src="${user.avatar}" class="avatar-circle" onclick="editProfile()">
+                    <span style="font-size:0.7rem; color:var(--accent); font-weight:700; margin-top:5px; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer;" onclick="editProfile()">${user.nick}</span>
+                </div>
+            </div>`;
+        document.getElementById('nav-my').style.display = 'block';
+    }
 
-    function saveProfileChanges() {
-        const newNick = document.getElementById('editNick').value;
-        const newFile = document.getElementById('editAvatar').files[0];
-        if(!newNick) return alert("Никнейм не может быть пустым!");
+    function logout() {
+        if(confirm("Вы уверены, что хотите выйти из аккаунта?")) {
+            localStorage.removeItem('pj_user');
+            location.reload();
+        }
+    }
 
-        if(newFile) {
-            const r = new FileReader();
-            r.onload = (e) => {
-                user.nick = newNick;
-                user.avatar = e.target.result;
-                localStorage.setItem('pj_user', JSON.stringify(user));
-                location.reload();
-            };
-            r.readAsDataURL(newFile);
-        } else {
-            user.nick = newNick;
-            localStorage.setItem('pj_user', JSON.stringify(user));
-            location.reload();
-        }
-    }
+    function editProfile() {
+        if(isMobile) return;
+        document.getElementById('editNick').value = user.nick;
+        openModal('editProfileModal');
+    }
 
-    function updateFileInput(val) {
-        const inp = document.getElementById('gMainFile');
-        if(val === 'folder') { inp.webkitdirectory = true; inp.directory = true; inp.multiple = true; }
-        else { inp.webkitdirectory = false; inp.directory = false; inp.multiple = false; }
-    }
+    function saveProfileChanges() {
+        const newNick = document.getElementById('editNick').value;
+        const newFile = document.getElementById('editAvatar').files[0];
+        if(!newNick) return alert("Никнейм не может быть пустым!");
 
-    function publish() {
-        const name = document.getElementById('gName').value;
-        const desc = document.getElementById('gDesc').value;
-        const cover = document.getElementById('gCover').files[0];
-        const gameFile = document.getElementById('gMainFile').files[0];
-        if(!name || !cover || !gameFile) return alert("Заполните всё: название, обложку и файл!");
+        if(newFile) {
+            const r = new FileReader();
+            r.onload = (e) => {
+                user.nick = newNick;
+                user.avatar = e.target.result;
+                localStorage.setItem('pj_user', JSON.stringify(user));
+                location.reload();
+            };
+            r.readAsDataURL(newFile);
+        } else {
+            user.nick = newNick;
+            localStorage.setItem('pj_user', JSON.stringify(user));
+            location.reload();
+        }
+    }
 
-        const r = new FileReader();
-        r.onload = (e) => {
-            const gr = new FileReader();
-            gr.onload = (ge) => {
-                const g = {
-                    id: Date.now(),
-                    name: name,
-                    desc: desc || "Описание не добавлено автором.",
-                    cover: e.target.result,
-                    gameData: ge.target.result,
-                    author: user.nick,
-                    authorAv: user.avatar,
-                    likes: 0, dislikes: 0
-                };
-                games.push(g);
-                localStorage.setItem('pj_games', JSON.stringify(games));
-                location.reload();
-            };
-            gr.readAsDataURL(gameFile);
-        };
-        r.readAsDataURL(cover);
-    }
+    function updateFileInput(val) {
+        const inp = document.getElementById('gMainFile');
+        if(val === 'folder') { inp.webkitdirectory = true; inp.directory = true; inp.multiple = true; }
+        else { inp.webkitdirectory = false; inp.directory = false; inp.multiple = false; }
+    }
 
-    function renderGames(data) {
-        const grid = document.getElementById('gameGrid');
-        grid.innerHTML = '';
-        data.forEach(g => {
-            const isMyTab = document.getElementById('nav-my').classList.contains('active');
-            const div = document.createElement('div');
-            div.className = 'game-card';
-            div.onclick = () => openPlay(g.id);
-            
-            let menuHtml = '';
-            if(isMyTab && user && g.author === user.nick) {
-                menuHtml = `
-                    <button class="more-btn" onclick="toggleMenu(event, ${g.id})">⋮</button>
-                    <div class="dropdown-menu" id="menu-${g.id}">
-                        <div class="dropdown-item" onclick="deleteGame(event, ${g.id})">УДАЛИТЬ</div>
-                    </div>
-                `;
-            }
+    function publish() {
+        const name = document.getElementById('gName').value;
+        const desc = document.getElementById('gDesc').value;
+        const cover = document.getElementById('gCover').files[0];
+        const gameFile = document.getElementById('gMainFile').files[0];
+        if(!name || !cover || !gameFile) return alert("Заполните всё: название, обложку и файл!");
 
-            div.innerHTML = `
-                ${menuHtml}
-                <img src="${g.cover}" class="card-img">
-                <div style="padding:15px;">
-                    <div style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:#888; margin-bottom:8px;">
-                        <img src="${g.authorAv}" style="width:20px; height:20px; border-radius:50%; object-fit:cover;"> @${g.author}
-                    </div>
-                    <h3 style="margin:0; font-size:1.1rem; color:white;">${g.name}</h3>
-                </div>`;
-            grid.appendChild(div);
-        });
-    }
+        const r = new FileReader();
+        r.onload = (e) => {
+            const gr = new FileReader();
+            gr.onload = (ge) => {
+                const g = {
+                    id: Date.now(),
+                    name: name,
+                    desc: desc || "Описание не добавлено автором.",
+                    cover: e.target.result,
+                    gameData: ge.target.result,
+                    author: user.nick,
+                    authorAv: user.avatar,
+                    likes: 0, dislikes: 0
+                };
+                games.push(g);
+                localStorage.setItem('pj_games', JSON.stringify(games));
+                location.reload();
+            };
+            gr.readAsDataURL(gameFile);
+        };
+        r.readAsDataURL(cover);
+    }
 
-    function toggleMenu(e, id) {
-        e.stopPropagation();
-        const allMenus = document.querySelectorAll('.dropdown-menu');
-        allMenus.forEach(m => { if(m.id !== 'menu-'+id) m.style.display = 'none'; });
-        const menu = document.getElementById('menu-' + id);
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
+    function renderGames(data) {
+        const grid = document.getElementById('gameGrid');
+        grid.innerHTML = '';
+        data.forEach(g => {
+            const isMyTab = document.getElementById('nav-my').classList.contains('active');
+            const div = document.createElement('div');
+            div.className = 'game-card';
+            div.onclick = () => openPlay(g.id);
+            
+            let menuHtml = '';
+            if(isMyTab && user && g.author === user.nick) {
+                menuHtml = `
+                    <button class="more-btn" onclick="toggleMenu(event, ${g.id})">⋮</button>
+                    <div class="dropdown-menu" id="menu-${g.id}">
+                        <div class="dropdown-item" onclick="deleteGame(event, ${g.id})">УДАЛИТЬ</div>
+                    </div>
+                `;
+            }
 
-    function deleteGame(e, id) {
-        e.stopPropagation();
-        if(confirm("Вы уверены, что хотите удалить эту игру?")) {
-            games = games.filter(g => g.id !== id);
-            localStorage.setItem('pj_games', JSON.stringify(games));
-            showTab('my');
-        }
-    }
+            div.innerHTML = `
+                ${menuHtml}
+                <img src="${g.cover}" class="card-img">
+                <div style="padding:15px;">
+                    <div style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:#888; margin-bottom:8px;">
+                        <img src="${g.authorAv}" style="width:20px; height:20px; border-radius:50%; object-fit:cover;"> @${g.author}
+                    </div>
+                    <h3 style="margin:0; font-size:1.1rem; color:white;">${g.name}</h3>
+                </div>`;
+            grid.appendChild(div);
+        });
+    }
 
-    window.onclick = () => {
-        document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
-    };
+    function toggleMenu(e, id) {
+        e.stopPropagation();
+        const allMenus = document.querySelectorAll('.dropdown-menu');
+        allMenus.forEach(m => { if(m.id !== 'menu-'+id) m.style.display = 'none'; });
+        const menu = document.getElementById('menu-' + id);
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
 
-    function showTab(tab) {
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        if(tab === 'my' && user) {
-            document.getElementById('nav-my').classList.add('active');
-            renderGames(games.filter(g => g.author === user.nick));
-            document.getElementById('tabTitle').innerText = "МОИ ИГРЫ";
-        } else {
-            document.getElementById('nav-rec').classList.add('active');
-            renderGames(games);
-            document.getElementById('tabTitle').innerText = "РЕКОМЕНДАЦИИ";
-        }
-        document.getElementById('mainContent').style.display = 'block';
-        document.getElementById('playPage').style.display = 'none';
-    }
+    function deleteGame(e, id) {
+        e.stopPropagation();
+        if(confirm("Вы уверены, что хотите удалить эту игру?")) {
+            games = games.filter(g => g.id !== id);
+            localStorage.setItem('pj_games', JSON.stringify(games));
+            showTab('my');
+        }
+    }
 
-    function openPlay(id) {
-        const g = games.find(x => x.id === id);
-        currentGId = id;
-        document.getElementById('mainContent').style.display = 'none';
-        document.getElementById('playPage').style.display = 'block';
-        document.getElementById('pImg').src = g.cover;
-        document.getElementById('pTitle').innerText = g.name;
-        document.getElementById('pAuthAv').src = g.authorAv;
-        document.getElementById('pAuthNick').innerText = "@" + g.author;
-        document.getElementById('pDesc').innerText = g.desc;
-        
-        document.querySelector('.btn-play-wide').onclick = () => {
-            if(g.gameData) {
-                document.getElementById('gameIframe').src = g.gameData;
-                document.getElementById('gameScreen').style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            } else {
-                alert("Файл игры не найден!");
-            }
-        };
+    window.onclick = () => {
+        document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+    };
 
-        updateRateButtons();
-    }
+    function showTab(tab) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        if(tab === 'my' && user) {
+            document.getElementById('nav-my').classList.add('active');
+            renderGames(games.filter(g => g.author === user.nick));
+            document.getElementById('tabTitle').innerText = "МОИ ИГРЫ";
+        } else {
+            document.getElementById('nav-rec').classList.add('active');
+            renderGames(games);
+            document.getElementById('tabTitle').innerText = "РЕКОМЕНДАЦИИ";
+        }
+        document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('playPage').style.display = 'none';
+    }
 
-    function closeGameScreen() {
-        document.getElementById('gameScreen').style.display = 'none';
-        document.getElementById('gameIframe').src = '';
-        document.body.style.overflow = 'auto';
-    }
+    function openPlay(id) {
+        const g = games.find(x => x.id === id);
+        currentGId = id;
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('playPage').style.display = 'block';
+        document.getElementById('pImg').src = g.cover;
+        document.getElementById('pTitle').innerText = g.name;
+        document.getElementById('pAuthAv').src = g.authorAv;
+        document.getElementById('pAuthNick').innerText = "@" + g.author;
+        document.getElementById('pDesc').innerText = g.desc;
+        
+        document.querySelector('.btn-play-wide').onclick = () => {
+            if(g.gameData) {
+                document.getElementById('gameIframe').src = g.gameData;
+                document.getElementById('gameScreen').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            } else {
+                alert("Файл игры не найден!");
+            }
+        };
 
-    function rate(type) {
-        if(!user) return alert("Войдите в аккаунт!");
-        const g = games.find(x => x.id === currentGId);
-        const voteKey = currentGId;
+        updateRateButtons();
+    }
 
-        if (userVotes[voteKey] === type) {
-            type === 'like' ? g.likes-- : g.dislikes--;
-            delete userVotes[voteKey];
-        } else {
-            if (userVotes[voteKey]) {
-                userVotes[voteKey] === 'like' ? g.likes-- : g.dislikes--;
-            }
-            type === 'like' ? g.likes++ : g.dislikes++;
-            userVotes[voteKey] = type;
-        }
+    function closeGameScreen() {
+        document.getElementById('gameScreen').style.display = 'none';
+        document.getElementById('gameIframe').src = '';
+        document.body.style.overflow = 'auto';
+    }
 
-        localStorage.setItem('pj_games', JSON.stringify(games));
-        localStorage.setItem('pj_votes', JSON.stringify(userVotes));
-        updateRateButtons();
-    }
+    function rate(type) {
+        if(!user) return alert("Войдите в аккаунт!");
+        const g = games.find(x => x.id === currentGId);
+        const voteKey = currentGId;
 
-    function updateRateButtons() {
-        const g = games.find(x => x.id === currentGId);
-        document.getElementById('pLikes').innerText = g.likes;
-        document.getElementById('pDis').innerText = g.dislikes;
-        document.getElementById('likeBtn').classList.toggle('liked', userVotes[currentGId] === 'like');
-        document.getElementById('disBtn').classList.toggle('disliked', userVotes[currentGId] === 'dislike');
-    }
+        if (userVotes[voteKey] === type) {
+            type === 'like' ? g.likes-- : g.dislikes--;
+            delete userVotes[voteKey];
+        } else {
+            if (userVotes[voteKey]) {
+                userVotes[voteKey] === 'like' ? g.likes-- : g.dislikes--;
+            }
+            type === 'like' ? g.likes++ : g.dislikes++;
+            userVotes[voteKey] = type;
+        }
 
-    function closePlay() { showTab('rec'); }
+        localStorage.setItem('pj_games', JSON.stringify(games));
+        localStorage.setItem('pj_votes', JSON.stringify(userVotes));
+        updateRateButtons();
+    }
+
+    function updateRateButtons() {
+        const g = games.find(x => x.id === currentGId);
+        document.getElementById('pLikes').innerText = g.likes;
+        document.getElementById('pDis').innerText = g.dislikes;
+        document.getElementById('likeBtn').classList.toggle('liked', userVotes[currentGId] === 'like');
+        document.getElementById('disBtn').classList.toggle('disliked', userVotes[currentGId] === 'dislike');
+    }
+
+    function closePlay() { showTab('rec'); }
 </script>
 
 </body>
