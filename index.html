@@ -84,20 +84,27 @@
             cursor: pointer;
             white-space: nowrap;
         }
+        .dropdown-item:hover { background: #252525; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
         .form-box { max-width: 500px; margin: 30px auto; background: #0c0c0c; border-radius: 25px; padding: 35px; border: 1px solid #222; text-align: center; }
         input, select, textarea { width: 100%; background: #151515; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; margin-top: 10px; box-sizing: border-box; font-family: inherit; outline: none; }
+        input:focus { border-color: var(--accent); }
 
         .btn-main { width: 100%; padding: 15px; background: var(--accent); color: black; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 20px; }
+        .btn-main:hover { background: #00d688; box-shadow: 0 5px 15px rgba(0,255,163,0.3); }
+
         .btn-logout-red { width: 100%; padding: 12px; background: none; border: 1px solid var(--error); color: var(--error); border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 15px; }
+        .btn-logout-red:hover { background: var(--error); color: white; }
 
         .social-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 700; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-google { background: white; color: #333; }
         .btn-apple { background: #000; color: white; border: 1px solid #444; }
         .btn-fb { background: #1877F2; color: white; }
 
-        .play-container { max-width: 900px; margin: 0 auto; display: none; padding-top: 20px; }
+        .play-container { max-width: 900px; margin: 0 auto; display: none; padding-top: 20px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .play-top { display: flex; gap: 25px; align-items: flex-start; margin-bottom: 25px; flex-wrap: wrap; }
         .play-img-big { width: 220px; height: 140px; border-radius: 15px; object-fit: cover; border: 1px solid #333; }
         .play-author { display: flex; align-items: center; gap: 10px; color: #888; margin-top: 10px; }
@@ -107,15 +114,25 @@
         
         .rating-box { display: flex; gap: 15px; margin-bottom: 25px; }
         .rate-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px 25px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .rate-btn:hover { background: #222; }
+        .rate-btn.liked { color: var(--accent); border-color: var(--accent); }
+        .rate-btn.disliked { color: var(--error); border-color: var(--error); }
 
         .description-text { line-height: 1.6; color: #bbb; background: #111; padding: 25px; border-radius: 20px; border: 1px solid #222; }
 
         @media (max-width: 1023px) {
             .pc-only, #authBox { display: none !important; }
+            .nav-item#nav-my { display: none !important; }
+        }
+        
+        @media (min-width: 1024px) {
+            .pc-only { display: block; }
         }
     </style>
 </head>
 <body>
+
+<img src="logo.png" style="width:100%; max-height:300px; object-fit:cover;">
 
 <header>
     <div class="logo" onclick="location.reload()">FluxNode</div>
@@ -130,7 +147,7 @@
 
 <div class="container">
     <div id="mainContent">
-        <h2 id="tabTitle" style="margin-bottom:25px; font-weight: 900;">РЕКОМЕНДАЦИИ</h2>
+        <h2 id="tabTitle" style="margin-bottom:25px; font-weight: 900; letter-spacing: -1px;">РЕКОМЕНДАЦИИ</h2>
         <div class="game-grid" id="gameGrid"></div>
     </div>
 
@@ -146,7 +163,7 @@
                 </div>
             </div>
         </div>
-        <button class="btn-play-wide" id="mainPlayBtn">ИГРАТЬ</button>
+        <button class="btn-play-wide" id="finalPlayBtn">ИГРАТЬ</button>
         <div class="rating-box">
             <button id="likeBtn" class="rate-btn" onclick="rate('like')">👍 <span id="pLikes">0</span></button>
             <button id="disBtn" class="rate-btn" onclick="rate('dislike')">👎 <span id="pDis">0</span></button>
@@ -164,26 +181,46 @@
             <h2 style="margin-top:0;">ВОЙТИ ЧЕРЕЗ</h2>
             <button class="social-btn btn-google" onclick="nextStep()">Google</button>
             <button class="social-btn btn-apple" onclick="nextStep()">Apple ID</button>
+            <button class="social-btn btn-fb" onclick="nextStep()">Facebook</button>
             <p onclick="closeModal('regModal')" style="opacity:0.5; cursor:pointer; margin-top:20px;">Отмена</p>
         </div>
         <div id="stepProfile" style="display:none;">
             <h2 style="margin-top:0;">ПРОФИЛЬ</h2>
-            <input type="text" id="regNick" placeholder="Никнейм">
+            <input type="text" id="regNick" placeholder="Придумайте ник">
+            <label style="display:block; margin-top:20px; text-align:left;">Загрузите аватарку:</label>
             <input type="file" id="regAvatar" accept="image/*">
             <button class="btn-main" onclick="register()">ЗАВЕРШИТЬ</button>
         </div>
     </div>
 </div>
 
+<div class="modal" id="editProfileModal">
+    <div class="form-box">
+        <h2 style="color:var(--accent); margin-top:0;">РЕДАКТИРОВАТЬ ПРОФИЛЬ</h2>
+        <input type="text" id="editNick" placeholder="Новый никнейм">
+        <label style="display:block; margin-top:20px; text-align:left;">Новая аватарка (необязательно):</label>
+        <input type="file" id="editAvatar" accept="image/*">
+        <button class="btn-main" onclick="saveProfileChanges()">СОХРАНИТЬ ИЗМЕНЕНИЯ</button>
+        <button class="btn-logout-red" onclick="logout()">ВЫЙТИ ИЗ АККАУНТА</button>
+        <p onclick="closeModal('editProfileModal')" style="text-align:center; cursor:pointer; opacity:0.5; margin-top:20px;">Отмена</p>
+    </div>
+</div>
+
 <div class="modal" id="pubModal">
     <div class="form-box">
         <h2 style="color:var(--accent); margin-top:0;">НОВАЯ ПУБЛИКАЦИЯ</h2>
-        <input type="text" id="gName" placeholder="Название">
-        <textarea id="gDesc" placeholder="Описание"></textarea>
-        <label>Обложка:</label><input type="file" id="gCover" accept="image/*">
-        <label>Файл игры (.html):</label><input type="file" id="gMainFile" accept=".html">
-        <button class="btn-main" onclick="publish()">ОПУБЛИКОВАТЬ</button>
-        <p onclick="closeModal('pubModal')" style="cursor:pointer; opacity:0.5; margin-top:20px;">Отмена</p>
+        <input type="text" id="gName" placeholder="Название вашей игры">
+        <textarea id="gDesc" placeholder="О чем ваша игра? Расскажите подробнее..." rows="4"></textarea>
+        <label style="display:block; margin-top:20px;">Картинка (обложка):</label>
+        <input type="file" id="gCover" accept="image/*">
+        <label style="display:block; margin-top:20px;">Загрузка проекта:</label>
+        <select id="uTypeSelect" onchange="updateFileInput(this.value)" style="margin-bottom:10px;">
+            <option value="file">Один файл (.html)</option>
+            <option value="folder">Папка проекта</option>
+        </select>
+        <input type="file" id="gMainFile">
+        <button class="btn-main" onclick="publish()">ОПУБЛИКОВАТЬ В СЕТЬ</button>
+        <p onclick="closeModal('pubModal')" style="text-align:center; cursor:pointer; opacity:0.5; margin-top:20px;">Отмена</p>
     </div>
 </div>
 
@@ -198,8 +235,10 @@
     let currentGId = null;
     let userVotes = JSON.parse(localStorage.getItem('pj_votes')) || {};
 
+    const isMobile = window.innerWidth < 1024;
+
     window.onload = () => { 
-        if(user) updateUI(); 
+        if(!isMobile && user) updateUI(); 
         showTab('rec'); 
     };
 
@@ -215,9 +254,7 @@
             const r = new FileReader();
             r.onload = (e) => saveUser(nick, e.target.result);
             r.readAsDataURL(file);
-        } else {
-            saveUser(nick, 'https://cdn-icons-png.flaticon.com/512/149/149071.png');
-        }
+        } else saveUser(nick, 'https://cdn-icons-png.flaticon.com/512/149/149071.png');
     }
 
     function saveUser(nick, av) {
@@ -227,12 +264,40 @@
     }
 
     function updateUI() {
+        if(isMobile) return;
         document.getElementById('authBox').innerHTML = `
-            <div style="display:flex; align-items:center; gap:15px;">
-                <button class="btn-main" onclick="openModal('pubModal')" style="margin:0; width:auto; padding:8px 15px;">ВЫЛОЖИТЬ</button>
-                <img src="${user.avatar}" class="avatar-circle" style="width:35px; height:35px;">
+            <div style="display:flex; align-items:center; gap:20px;">
+                <button class="btn-main" onclick="openModal('pubModal')" style="margin:0; padding:8px 15px; font-size:0.8rem; width:auto;">ВЫЛОЖИТЬ</button>
+                <div style="display:flex; flex-direction:column; align-items:center;">
+                    <img src="${user.avatar}" class="avatar-circle" onclick="editProfile()">
+                    <span style="font-size:0.7rem; color:var(--accent); font-weight:700; margin-top:5px; cursor:pointer;" onclick="editProfile()">${user.nick}</span>
+                </div>
             </div>`;
         document.getElementById('nav-my').style.display = 'block';
+    }
+
+    function logout() { localStorage.removeItem('pj_user'); location.reload(); }
+    function editProfile() { document.getElementById('editNick').value = user.nick; openModal('editProfileModal'); }
+
+    function saveProfileChanges() {
+        const newNick = document.getElementById('editNick').value;
+        const newFile = document.getElementById('editAvatar').files[0];
+        if(newFile) {
+            const r = new FileReader();
+            r.onload = (e) => {
+                user.nick = newNick; user.avatar = e.target.result;
+                localStorage.setItem('pj_user', JSON.stringify(user)); location.reload();
+            };
+            r.readAsDataURL(newFile);
+        } else {
+            user.nick = newNick; localStorage.setItem('pj_user', JSON.stringify(user)); location.reload();
+        }
+    }
+
+    function updateFileInput(val) {
+        const inp = document.getElementById('gMainFile');
+        if(val === 'folder') { inp.webkitdirectory = true; inp.multiple = true; }
+        else { inp.webkitdirectory = false; inp.multiple = false; }
     }
 
     function publish() {
@@ -246,18 +311,11 @@
             const gr = new FileReader();
             gr.onload = (ge) => {
                 const g = {
-                    id: Date.now(),
-                    name: name,
-                    desc: document.getElementById('gDesc').value || "Нет описания",
-                    cover: e.target.result,
-                    gameData: ge.target.result,
-                    author: user.nick,
-                    authorAv: user.avatar,
-                    likes: 0, dislikes: 0
+                    id: Date.now(), name: name, desc: document.getElementById('gDesc').value || "...",
+                    cover: e.target.result, gameData: ge.target.result,
+                    author: user.nick, authorAv: user.avatar, likes: 0, dislikes: 0
                 };
-                games.push(g);
-                localStorage.setItem('pj_games', JSON.stringify(games));
-                location.reload();
+                games.push(g); localStorage.setItem('pj_games', JSON.stringify(games)); location.reload();
             };
             gr.readAsDataURL(gameFile);
         };
@@ -277,8 +335,14 @@
     }
 
     function showTab(tab) {
-        if(tab === 'my') renderGames(games.filter(g => g.author === user.nick));
-        else renderGames(games);
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        if(tab === 'my' && user) {
+            document.getElementById('nav-my').classList.add('active');
+            renderGames(games.filter(g => g.author === user.nick));
+        } else {
+            document.getElementById('nav-rec').classList.add('active');
+            renderGames(games);
+        }
         document.getElementById('mainContent').style.display = 'block';
         document.getElementById('playPage').style.display = 'none';
     }
@@ -294,13 +358,13 @@
         document.getElementById('pAuthNick').innerText = "@" + g.author;
         document.getElementById('pDesc').innerText = g.desc;
         
-        // Логика запуска игры
-        document.getElementById('mainPlayBtn').onclick = () => {
+        // ВОТ ТУТ РАБОЧАЯ КНОПКА
+        document.getElementById('finalPlayBtn').onclick = () => {
             if(g.gameData) {
                 document.getElementById('gameIframe').src = g.gameData;
                 document.getElementById('gameScreen').style.display = 'block';
                 document.body.style.overflow = 'hidden';
-            } else alert("Файл игры не найден!");
+            } else alert("Ошибка файла!");
         };
         updateRateButtons();
     }
@@ -314,7 +378,6 @@
     function closePlay() { showTab('rec'); }
 
     function rate(type) {
-        if(!user) return alert("Войди!");
         const g = games.find(x => x.id === currentGId);
         type === 'like' ? g.likes++ : g.dislikes++;
         localStorage.setItem('pj_games', JSON.stringify(games));
