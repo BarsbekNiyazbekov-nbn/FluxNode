@@ -2,7 +2,11 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="google-site-verification" content="qew8vFM_6pNZSCeajjGMCxwi8aqNZi5BlGP6Jd6-2CQ" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FluxNode — индивидуальная игровая вселенная. Играй и делись своими проектами.">
+    <meta name="keywords" content="FluxNode, игры, разработка игр, brainrot, rng игры">
+    
     <title>FluxNode | Игровая Вселенная</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -34,6 +38,7 @@
         .nav-item.active { color: var(--accent); }
         
         .avatar-circle { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); cursor: pointer; }
+        .avatar-circle:hover { box-shadow: 0 0 15px var(--accent); }
 
         .container { padding: 30px 40px; }
         .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
@@ -56,6 +61,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: bold;
             z-index: 10;
         }
         
@@ -68,24 +74,41 @@
             border-radius: 8px;
             display: none;
             z-index: 11;
+            overflow: hidden;
         }
-        .dropdown-item { padding: 10px 20px; font-size: 0.8rem; color: var(--error); font-weight: bold; cursor: pointer; }
+        .dropdown-item {
+            padding: 10px 20px;
+            font-size: 0.8rem;
+            color: var(--error);
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; overflow-y: auto; }
         .form-box { max-width: 500px; margin: 30px auto; background: #0c0c0c; border-radius: 25px; padding: 35px; border: 1px solid #222; text-align: center; }
-        input, select, textarea { width: 100%; background: #151515; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; margin-top: 10px; box-sizing: border-box; }
+        input, select, textarea { width: 100%; background: #151515; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; margin-top: 10px; box-sizing: border-box; font-family: inherit; outline: none; }
 
         .btn-main { width: 100%; padding: 15px; background: var(--accent); color: black; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 20px; }
         .btn-logout-red { width: 100%; padding: 12px; background: none; border: 1px solid var(--error); color: var(--error); border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 15px; }
 
-        .play-container { max-width: 900px; margin: 0 auto; display: none; padding-top: 20px; }
-        .play-top { display: flex; gap: 25px; align-items: flex-start; margin-bottom: 25px; }
-        .play-img-big { width: 220px; height: 140px; border-radius: 15px; object-fit: cover; }
+        .social-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: 700; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-google { background: white; color: #333; }
+        .btn-apple { background: #000; color: white; border: 1px solid #444; }
+        .btn-fb { background: #1877F2; color: white; }
 
-        .btn-play-wide { width: 100%; padding: 15px; background: var(--accent); color: black; border: none; border-radius: 12px; font-weight: 900; font-size: 1.2rem; cursor: pointer; margin-bottom: 25px; }
+        .play-container { max-width: 900px; margin: 0 auto; display: none; padding-top: 20px; }
+        .play-top { display: flex; gap: 25px; align-items: flex-start; margin-bottom: 25px; flex-wrap: wrap; }
+        .play-img-big { width: 220px; height: 140px; border-radius: 15px; object-fit: cover; border: 1px solid #333; }
+        .play-author { display: flex; align-items: center; gap: 10px; color: #888; margin-top: 10px; }
+        .play-author img { width: 30px; height: 30px; border-radius: 50%; }
+
+        .btn-play-wide { width: 100%; padding: 15px; background: var(--accent); color: black; border: none; border-radius: 12px; font-weight: 900; font-size: 1.2rem; cursor: pointer; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
         
         .rating-box { display: flex; gap: 15px; margin-bottom: 25px; }
-        .rate-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px 25px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .rate-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px 25px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+
+        .description-text { line-height: 1.6; color: #bbb; background: #111; padding: 25px; border-radius: 20px; border: 1px solid #222; }
 
         @media (max-width: 1023px) {
             .pc-only, #authBox { display: none !important; }
@@ -115,22 +138,22 @@
         <button onclick="closePlay()" style="background:none; border:none; color:var(--accent); cursor:pointer; margin-bottom:20px; font-weight: bold;">← НАЗАД</button>
         <div class="play-top">
             <img id="pImg" class="play-img-big" src="">
-            <div>
-                <h1 id="pTitle" style="margin:0; font-size: 2.5rem;">Название</h1>
-                <div style="display:flex; align-items:center; gap:10px; color:#888; margin-top:10px;">
-                    <img id="pAuthAv" src="" style="width:30px; height:30px; border-radius:50%;">
+            <div class="play-meta">
+                <h1 id="pTitle" style="margin:0; font-size: 2.5rem;">Название игры</h1>
+                <div class="play-author">
+                    <img id="pAuthAv" src="">
                     <span id="pAuthNick">@автор</span>
                 </div>
             </div>
         </div>
-        <button class="btn-play-wide">ИГРАТЬ</button>
+        <button class="btn-play-wide" id="mainPlayBtn">ИГРАТЬ</button>
         <div class="rating-box">
             <button id="likeBtn" class="rate-btn" onclick="rate('like')">👍 <span id="pLikes">0</span></button>
             <button id="disBtn" class="rate-btn" onclick="rate('dislike')">👎 <span id="pDis">0</span></button>
         </div>
-        <div style="background:#111; padding:25px; border-radius:20px;">
-            <h4 style="margin-top:0; color:var(--accent);">Описание:</h4>
-            <div id="pDesc"></div>
+        <div class="description-text">
+            <h4 style="margin-top:0; color:var(--accent); text-transform: uppercase;">Описание:</h4>
+            <div id="pDesc">Тут будет описание игры...</div>
         </div>
     </div>
 </div>
@@ -138,54 +161,40 @@
 <div class="modal" id="regModal">
     <div class="form-box">
         <div id="stepSocial">
-            <h2>ВОЙТИ ЧЕРЕЗ</h2>
-            <button class="btn-main" style="background:#fff" onclick="nextStep()">Google</button>
-            <button class="btn-main" style="background:#000; color:#fff; border:1px solid #444" onclick="nextStep()">Apple ID</button>
-            <p onclick="closeModal('regModal')" style="cursor:pointer; opacity:0.5;">Отмена</p>
+            <h2 style="margin-top:0;">ВОЙТИ ЧЕРЕЗ</h2>
+            <button class="social-btn btn-google" onclick="nextStep()">Google</button>
+            <button class="social-btn btn-apple" onclick="nextStep()">Apple ID</button>
+            <p onclick="closeModal('regModal')" style="opacity:0.5; cursor:pointer; margin-top:20px;">Отмена</p>
         </div>
         <div id="stepProfile" style="display:none;">
-            <h2>ПРОФИЛЬ</h2>
+            <h2 style="margin-top:0;">ПРОФИЛЬ</h2>
             <input type="text" id="regNick" placeholder="Никнейм">
             <input type="file" id="regAvatar" accept="image/*">
-            <button class="btn-main" onclick="register()">ГОТОВО</button>
+            <button class="btn-main" onclick="register()">ЗАВЕРШИТЬ</button>
         </div>
     </div>
 </div>
 
 <div class="modal" id="pubModal">
     <div class="form-box">
-        <h2>НОВАЯ ИГРА</h2>
+        <h2 style="color:var(--accent); margin-top:0;">НОВАЯ ПУБЛИКАЦИЯ</h2>
         <input type="text" id="gName" placeholder="Название">
-        <textarea id="gDesc" placeholder="Описание" style="width:100%; margin-top:10px; background:#151515; border:1px solid #333; color:#fff; border-radius:10px; padding:12px;"></textarea>
+        <textarea id="gDesc" placeholder="Описание"></textarea>
         <label>Обложка:</label><input type="file" id="gCover" accept="image/*">
         <label>Файл игры (.html):</label><input type="file" id="gMainFile" accept=".html">
         <button class="btn-main" onclick="publish()">ОПУБЛИКОВАТЬ</button>
-        <p onclick="closeModal('pubModal')" style="cursor:pointer; opacity:0.5;">Отмена</p>
+        <p onclick="closeModal('pubModal')" style="cursor:pointer; opacity:0.5; margin-top:20px;">Отмена</p>
     </div>
 </div>
 
 <div id="gameScreen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999;">
-    <button onclick="closeGameScreen()" style="position:absolute; top:20px; right:20px; z-index:10000; padding:10px 20px; background:var(--error); color:white; border:none; border-radius:10px; font-weight:bold;">ЗАКРЫТЬ</button>
+    <button onclick="closeGameScreen()" style="position:absolute; top:20px; right:20px; z-index:10000; padding:10px 20px; background:var(--error); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">ЗАКРЫТЬ ИГРУ</button>
     <iframe id="gameIframe" src="" style="width:100%; height:100%; border:none; background:white;"></iframe>
 </div>
 
 <script>
     let user = JSON.parse(localStorage.getItem('pj_user')) || null;
-    
-    let defaultGame = {
-        id: 1,
-        name: "Brainrot Clicker",
-        desc: "Лучший кликер для настоящих сигм!",
-        cover: "https://via.placeholder.com/600x400?text=Brainrot+Clicker", 
-        gameData: "index2.html", 
-        author: "bars",
-        authorAv: "https://cdn-icons-png.flaticon.com/512/149/149071.png", 
-        likes: 61, dislikes: 9
-    };
-
-    let games = JSON.parse(localStorage.getItem('pj_games')) || [defaultGame];
-    if (games.length === 0) games = [defaultGame];
-
+    let games = JSON.parse(localStorage.getItem('pj_games')) || [];
     let currentGId = null;
     let userVotes = JSON.parse(localStorage.getItem('pj_votes')) || {};
 
@@ -204,7 +213,7 @@
         if(!nick) return alert("Введите ник!");
         if(file) {
             const r = new FileReader();
-            r.onload = (e) => { saveUser(nick, e.target.result); };
+            r.onload = (e) => saveUser(nick, e.target.result);
             r.readAsDataURL(file);
         } else {
             saveUser(nick, 'https://cdn-icons-png.flaticon.com/512/149/149071.png');
@@ -268,11 +277,10 @@
     }
 
     function showTab(tab) {
-        if(tab === 'my') {
-            renderGames(games.filter(g => g.author === user.nick));
-        } else {
-            renderGames(games);
-        }
+        if(tab === 'my') renderGames(games.filter(g => g.author === user.nick));
+        else renderGames(games);
+        document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('playPage').style.display = 'none';
     }
 
     function openPlay(id) {
@@ -286,9 +294,13 @@
         document.getElementById('pAuthNick').innerText = "@" + g.author;
         document.getElementById('pDesc').innerText = g.desc;
         
-        document.querySelector('.btn-play-wide').onclick = () => {
-            document.getElementById('gameIframe').src = g.gameData;
-            document.getElementById('gameScreen').style.display = 'block';
+        // Логика запуска игры
+        document.getElementById('mainPlayBtn').onclick = () => {
+            if(g.gameData) {
+                document.getElementById('gameIframe').src = g.gameData;
+                document.getElementById('gameScreen').style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            } else alert("Файл игры не найден!");
         };
         updateRateButtons();
     }
@@ -296,9 +308,10 @@
     function closeGameScreen() {
         document.getElementById('gameScreen').style.display = 'none';
         document.getElementById('gameIframe').src = '';
+        document.body.style.overflow = 'auto';
     }
 
-    function closePlay() { document.getElementById('mainContent').style.display = 'block'; document.getElementById('playPage').style.display = 'none'; }
+    function closePlay() { showTab('rec'); }
 
     function rate(type) {
         if(!user) return alert("Войди!");
