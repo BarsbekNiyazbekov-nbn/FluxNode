@@ -237,7 +237,28 @@
 
 <script>
     let user = JSON.parse(localStorage.getItem('pj_user')) || null;
-    let games = JSON.parse(localStorage.getItem('pj_games')) || [];
+    let games = JSON.parse(localStorage.getItem('pj_games'));
+
+    // --- ДОБАВЛЕННЫЙ БЛОК: Загрузка демо-игры, если игр нет ---
+    if (!games || games.length === 0) {
+        games = [
+            {
+                id: 11111,
+                name: "Демо-игра: FluxNode",
+                desc: "Добро пожаловать! Эта игра добавлена по умолчанию, чтобы ты видел, что сайт отлично работает на любых устройствах, в том числе на телефонах.",
+                cover: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400",
+                gameData: "", 
+                author: "FluxAdmin",
+                authorAv: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+                likes: 42, 
+                dislikes: 0
+            }
+        ];
+        // Сразу сохраняем её в память устройства
+        localStorage.setItem('pj_games', JSON.stringify(games));
+    }
+    // -----------------------------------------------------------
+
     let currentGId = null;
     let userVotes = JSON.parse(localStorage.getItem('pj_votes')) || {};
 
@@ -443,7 +464,6 @@
         document.getElementById('playPage').style.display = 'none';
     }
 
-    // ✅ ИСПРАВЛЕНО: кнопка ИГРАТЬ теперь работает через Blob URL
     function openPlay(id) {
         const g = games.find(x => x.id === id);
         currentGId = id;
@@ -469,7 +489,7 @@
                 document.getElementById('gameScreen').style.display = 'block';
                 document.body.style.overflow = 'hidden';
             } else {
-                alert("Файл игры не найден!");
+                alert("Файл игры не найден! (Или это демо-игра без файла)");
             }
         };
 
