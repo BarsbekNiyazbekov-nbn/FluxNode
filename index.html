@@ -92,12 +92,10 @@
 
         .description-text { line-height: 1.6; color: #bbb; background: #111; padding: 25px; border-radius: 20px; border: 1px solid #222; }
 
-        /* ИСПРАВЛЕНО: Адаптация под мобильные телефоны */
         @media (max-width: 1023px) {
             .pc-only { display: none !important; }
             .nav-item#nav-my { display: none !important; }
             
-            /* Перестраиваем шапку, чтобы кнопка и логин влезали на телефоне */
             header { flex-wrap: wrap; padding: 15px 20px; gap: 10px; }
             .nav-links { order: 3; width: 100%; justify-content: center; margin-top: 5px; }
             #authBox .btn-main { padding: 8px 12px; font-size: 0.75rem; }
@@ -211,7 +209,6 @@
     let user = JSON.parse(localStorage.getItem('pj_user')) || null;
     let games = JSON.parse(localStorage.getItem('pj_games'));
 
-    // ИСПРАВЛЕНО: Добавлен настоящий base64-код, чтобы демо-игра открывалась
     if (!games || games.length === 0) {
         games = [
             {
@@ -219,8 +216,7 @@
                 name: "Демо-игра: FluxNode",
                 desc: "Добро пожаловать! Нажми 'Играть', чтобы увидеть, как подгружаются проекты.",
                 cover: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400",
-                // Этот странный текст ниже - закодированная тестовая HTML-страничка!
-                gameData: "data:text/html;base64,PGh0bWw+PGJvZHkgc3R5bGU9ImJhY2tncm91bmQ6IzExMTsgY29sb3I6IzAwZmZhMzsgZm9udC1mYW1pbHk6c2Fucy1zZXJpZjsgdGV4dC1hbGlnbjpjZW50ZXI7IHBhZGRpbmctdG9wOjIwJTsiPjxoMT7QktCh0JUg0KDQkNCe0KLQkNCV0KIhPC9oMT48cCBzdHlsZT0iY29sb3I6d2hpdGU7Ij7RjdGC0L4g0YLQtdGB0YLQvtCy0YvQuSDRhNCw0LnQuyDQuNCz0YDQuy48L3A+PGJ1dHRvbiBvbmNsaWNrPSJhbGVydCgn0JrQvtC0INC+0LHQvtGA0LDQsdCw0YLRi9Cy0LDQtdGC0YHRjyDQvtGC0LvQuNGH0L3QviEnKSIgc3R5bGU9ImJhY2tncm91bmQ6IzAwZmZhMzsgYm9yZGVyOm5vbmU7IHBhZGRpbmc6MTVweCAzMHB4OyBib3JkZXItcmFkaXVzOjEwcHg7IGZvbnQtd2VpZ2h0OmJvbGQ7IGN1cnNvcjpwb2ludGVyOyBtYXJnaW4tdG9wOjIwcHg7Ij7QndCQ0JbQnNCYINCc0JXQndCvPC9idXR0b24+PC9ib2R5PjwvaHRtbD4=", 
+                gameData: "data:text/html;base64,PGh0bWw+PGJvZHkgc3R5bGU9ImJhY2tncm91bmQ6IzExMTsgY29sb3I6IzAwZmZhMzsgZm9udC1mYW1pbHk6c2Fucy1zZXJpZjsgdGV4dC1hbGlnbjpjZW50ZXI7IHBhZGRpbmctdG9wOjIwJTsiPjxoMT7QktCh0JUg0KDQkNCe0KLQkNCV0KIhPC9oMT48cCBzdHlsZT0iY29sb3I6d2hpdGU7Ij7RjdGC0L4g0YLQtdGB0YLQvtCy0YvQuSDRhNCw0LnQuyDQuNCz0YDQuy48L3A+PGJ1dHRvbiBvbmNsaWNrPSJhbGVydCgn0JrQvtC0INC+0LHQvtGA0LDQsdCw0YLRi9Cy0LDQtdGC0YHRjyDQvtGC0LvQuNGH0L3QviEnKSIgc3R5bGU9ImJhY2tncm91bmQ6IzAwZmZhMzsgYm9yZGVyOm5vbmU7IHBhZGRpbmc6MTVweCAzMHB4Oy bib3JkZXItcmFkaXVzOjEwcHg7IGZvbnQtd2VpZ2h0OmJvbGQ7IGN1cnNvcjpwb2ludGVyOyBtYXJnaW4tdG9wOjIwcHg7Ij7QndCQ0JbQnNCYINCc0JXQndCvPC9idXR0b24+PC9ib2R5PjwvaHRtbD4=", 
                 author: "FluxAdmin",
                 authorAv: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
                 likes: 42, 
@@ -235,7 +231,7 @@
     let currentOnline = Math.floor(Math.random() * (50 - 15 + 1)) + 15;
 
     window.onload = () => { 
-        if(user) updateUI(); // ИСПРАВЛЕНО: Убрал блокировку для телефонов
+        if(user) updateUI(); 
         showTab('rec'); 
         startOnlineCounter();
     };
@@ -284,10 +280,10 @@
     }
 
     function updateUI() {
-        // ИСПРАВЛЕНО: Теперь интерфейс обновляется и на телефонах!
+        // ИСПРАВЛЕНО: Кнопке ВЫЛОЖИТЬ добавлен класс pc-only, теперь она исчезает на телефонах
         document.getElementById('authBox').innerHTML = `
             <div style="display:flex; align-items:center; gap:15px;">
-                <button class="btn-main" onclick="openModal('pubModal')" style="margin:0; padding:8px 15px; font-size:0.8rem; width:auto;">ВЫЛОЖИТЬ</button>
+                <button class="btn-main pc-only" onclick="openModal('pubModal')" style="margin:0; padding:8px 15px; font-size:0.8rem; width:auto;">ВЫЛОЖИТЬ</button>
                 <div style="display:flex; flex-direction:column; align-items:center;">
                     <img src="${user.avatar}" class="avatar-circle" onclick="editProfile()">
                     <span style="font-size:0.7rem; color:var(--accent); font-weight:700; margin-top:5px; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer;" onclick="editProfile()">${user.nick}</span>
@@ -425,7 +421,7 @@
             document.getElementById('tabTitle').innerText = "МОИ ИГРЫ";
         } else {
             document.getElementById('nav-rec').classList.add('active');
-            renderGames(games);
+            renderGames(games); // Отрендерит все игры для всех устройств
             document.getElementById('tabTitle').innerText = "РЕКОМЕНДАЦИИ";
         }
         document.getElementById('mainContent').style.display = 'block';
