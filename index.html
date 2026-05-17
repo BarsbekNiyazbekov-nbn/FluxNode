@@ -3,12 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="qew8vFM_6pNZSCeajjGMCxwi8aqNZi5BlGP6Jd6-2CQ" />
-    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <meta name="description" content="FluxNode — индивидуальная игровая вселенная. Играй и делись своими проектами.">
-    <meta name="keywords" content="FluxNode, игры, разработка игр, brainrot, rng игры">
-    
     <title>FluxNode | Игровая Вселенная</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -50,42 +46,15 @@
         .card-img { width: 100%; height: 160px; object-fit: cover; }
 
         .more-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            z-index: 10;
+            position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10;
         }
         .more-btn:hover { background: #333; }
         
         .dropdown-menu {
-            position: absolute;
-            top: 45px;
-            right: 10px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            display: none;
-            z-index: 11;
-            overflow: hidden;
+            position: absolute; top: 45px; right: 10px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; display: none; z-index: 11; overflow: hidden;
         }
         .dropdown-item {
-            padding: 10px 20px;
-            font-size: 0.8rem;
-            color: var(--error);
-            font-weight: bold;
-            cursor: pointer;
-            white-space: nowrap;
+            padding: 10px 20px; font-size: 0.8rem; color: var(--error); font-weight: bold; cursor: pointer; white-space: nowrap;
         }
         .dropdown-item:hover { background: #252525; }
 
@@ -123,16 +92,19 @@
 
         .description-text { line-height: 1.6; color: #bbb; background: #111; padding: 25px; border-radius: 20px; border: 1px solid #222; }
 
-        .logout-text { font-size: 0.65rem; color: #ff4757; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-top: 2px; }
-        .logout-text:hover { text-decoration: underline; }
-
+        /* ИСПРАВЛЕНО: Адаптация под мобильные телефоны */
         @media (max-width: 1023px) {
-            .pc-only, #authBox { display: none !important; }
+            .pc-only { display: none !important; }
             .nav-item#nav-my { display: none !important; }
-        }
-        
-        @media (min-width: 1024px) {
-            .pc-only { display: block; }
+            
+            /* Перестраиваем шапку, чтобы кнопка и логин влезали на телефоне */
+            header { flex-wrap: wrap; padding: 15px 20px; gap: 10px; }
+            .nav-links { order: 3; width: 100%; justify-content: center; margin-top: 5px; }
+            #authBox .btn-main { padding: 8px 12px; font-size: 0.75rem; }
+            
+            .container { padding: 15px 20px; }
+            .play-top { flex-direction: column; align-items: center; text-align: center; }
+            .play-img-big { width: 100%; height: auto; aspect-ratio: 16/9; }
         }
     </style>
 </head>
@@ -147,7 +119,7 @@
         <span class="nav-item pc-only" id="nav-my" style="display:none;" onclick="showTab('my')">Мои игры</span>
     </div>
     <div id="authBox">
-        <button onclick="openModal('regModal')" class="btn-main" style="margin:0; padding:10px 20px; width:auto; font-size:0.8rem;">РЕГИСТРАЦИЯ</button>
+        <button onclick="openModal('regModal')" class="btn-main" style="margin:0; width:auto;">РЕГИСТРАЦИЯ</button>
     </div>
 </header>
 
@@ -163,14 +135,14 @@
             <img id="pImg" class="play-img-big" src="">
             <div class="play-meta">
                 <h1 id="pTitle" style="margin:0; font-size: 2.5rem;">Название игры</h1>
-                <div class="play-author">
+                <div class="play-author" style="justify-content: center;">
                     <img id="pAuthAv" src="">
                     <span id="pAuthNick">@автор</span>
                 </div>
             </div>
         </div>
         <button class="btn-play-wide">ИГРАТЬ</button>
-        <div class="rating-box">
+        <div class="rating-box" style="justify-content: center;">
             <button id="likeBtn" class="rate-btn" onclick="rate('like')">👍 <span id="pLikes">0</span></button>
             <button id="disBtn" class="rate-btn" onclick="rate('dislike')">👎 <span id="pDis">0</span></button>
         </div>
@@ -239,34 +211,31 @@
     let user = JSON.parse(localStorage.getItem('pj_user')) || null;
     let games = JSON.parse(localStorage.getItem('pj_games'));
 
-    // --- ДОБАВЛЕННЫЙ БЛОК: Загрузка демо-игры, если игр нет ---
+    // ИСПРАВЛЕНО: Добавлен настоящий base64-код, чтобы демо-игра открывалась
     if (!games || games.length === 0) {
         games = [
             {
                 id: 11111,
                 name: "Демо-игра: FluxNode",
-                desc: "Добро пожаловать! Эта игра добавлена по умолчанию, чтобы ты видел, что сайт отлично работает на любых устройствах, в том числе на телефонах.",
+                desc: "Добро пожаловать! Нажми 'Играть', чтобы увидеть, как подгружаются проекты.",
                 cover: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400",
-                gameData: "", 
+                // Этот странный текст ниже - закодированная тестовая HTML-страничка!
+                gameData: "data:text/html;base64,PGh0bWw+PGJvZHkgc3R5bGU9ImJhY2tncm91bmQ6IzExMTsgY29sb3I6IzAwZmZhMzsgZm9udC1mYW1pbHk6c2Fucy1zZXJpZjsgdGV4dC1hbGlnbjpjZW50ZXI7IHBhZGRpbmctdG9wOjIwJTsiPjxoMT7QktCh0JUg0KDQkNCe0KLQkNCV0KIhPC9oMT48cCBzdHlsZT0iY29sb3I6d2hpdGU7Ij7RjdGC0L4g0YLQtdGB0YLQvtCy0YvQuSDRhNCw0LnQuyDQuNCz0YDQuy48L3A+PGJ1dHRvbiBvbmNsaWNrPSJhbGVydCgn0JrQvtC0INC+0LHQvtGA0LDQsdCw0YLRi9Cy0LDQtdGC0YHRjyDQvtGC0LvQuNGH0L3QviEnKSIgc3R5bGU9ImJhY2tncm91bmQ6IzAwZmZhMzsgYm9yZGVyOm5vbmU7IHBhZGRpbmc6MTVweCAzMHB4OyBib3JkZXItcmFkaXVzOjEwcHg7IGZvbnQtd2VpZ2h0OmJvbGQ7IGN1cnNvcjpwb2ludGVyOyBtYXJnaW4tdG9wOjIwcHg7Ij7QndCQ0JbQnNCYINCc0JXQndCvPC9idXR0b24+PC9ib2R5PjwvaHRtbD4=", 
                 author: "FluxAdmin",
                 authorAv: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
                 likes: 42, 
                 dislikes: 0
             }
         ];
-        // Сразу сохраняем её в память устройства
         localStorage.setItem('pj_games', JSON.stringify(games));
     }
-    // -----------------------------------------------------------
 
     let currentGId = null;
     let userVotes = JSON.parse(localStorage.getItem('pj_votes')) || {};
-
-    const isMobile = window.innerWidth < 1024;
     let currentOnline = Math.floor(Math.random() * (50 - 15 + 1)) + 15;
 
     window.onload = () => { 
-        if(!isMobile && user) updateUI(); 
+        if(user) updateUI(); // ИСПРАВЛЕНО: Убрал блокировку для телефонов
         showTab('rec'); 
         startOnlineCounter();
     };
@@ -315,9 +284,9 @@
     }
 
     function updateUI() {
-        if(isMobile) return;
+        // ИСПРАВЛЕНО: Теперь интерфейс обновляется и на телефонах!
         document.getElementById('authBox').innerHTML = `
-            <div style="display:flex; align-items:center; gap:20px;">
+            <div style="display:flex; align-items:center; gap:15px;">
                 <button class="btn-main" onclick="openModal('pubModal')" style="margin:0; padding:8px 15px; font-size:0.8rem; width:auto;">ВЫЛОЖИТЬ</button>
                 <div style="display:flex; flex-direction:column; align-items:center;">
                     <img src="${user.avatar}" class="avatar-circle" onclick="editProfile()">
@@ -335,7 +304,6 @@
     }
 
     function editProfile() {
-        if(isMobile) return;
         document.getElementById('editNick').value = user.nick;
         openModal('editProfileModal');
     }
@@ -489,7 +457,7 @@
                 document.getElementById('gameScreen').style.display = 'block';
                 document.body.style.overflow = 'hidden';
             } else {
-                alert("Файл игры не найден! (Или это демо-игра без файла)");
+                alert("Файл игры не найден!");
             }
         };
 
